@@ -1,0 +1,24 @@
+{
+	"geode": "4.2.0",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "loovigmd.clone_and_move",
+	"name": "Clone and Move",
+	"version": "v1.0.0",
+	"developer": "loovigmd",
+	"description": "Adds Copy + Paste + Move buttons.",
+	"resources": {
+		"spritesheets": {
+			"CloneAndMoveButton": [
+				"res/button.png"
+			]
+		}
+	},
+	"tags": [
+		"editor"
+	]
+}
