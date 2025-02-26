@@ -1,5 +1,5 @@
 # Clone and Move Mod
-This mod adds 4 new buttons which allow you to copy and paste and then move object in any direction in 1 click.
+This Geometry Dash mod adds 4 new buttons which allow you to copy and paste and then move object in any direction in 1 click.
 This mod may be useless on PC but useful on mobile.
 
 ## How to use
@@ -10,7 +10,7 @@ This mod may be useless on PC but useful on mobile.
 5. The selected objects should be copied and pasted and moved in the direction of the button you have clicked.
 
 ## Compatibility
-The mod should work fine with BetterEdit, though I haven't figured out how can I make the buttons be added after BetterEdit move buttons so they appear between 1/2 and 1/4 move buttons.
+The mod should work fine with [BetterEdit](https://github.com/HJfod/BetterEdit), though I haven't figured out how can I make the buttons be added after [BetterEdit](https://github.com/HJfod/BetterEdit) move buttons so they appear between 1/2 and 1/4 move buttons.
 
 ## Build instructions
 ```sh

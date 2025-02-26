@@ -16,8 +16,6 @@ class $modify(MyEditorUI, EditorUI) {
 
 		// If there are objects selected, the function continues
         if (this->getSelectedObjects()->count()) {
-            auto* objects = this->getSelectedObjects();
-
 			// Activating Copy+Paste button
             m_copyPasteBtn->activate(); 
 				

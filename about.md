@@ -13,5 +13,5 @@ This mod may be useless on PC but useful on mobile.
 5. The selected objects should be copied and pasted and moved in the direction of the button you have clicked.
 
 ## Compatibility
-The mod should work fine with BetterEdit, though I haven't figured out how can I make the buttons be added after BetterEdit move buttons yet, so they appear between 1/2 and 1/4 move buttons.
+The mod should work fine with [BetterEdit](mod:hjfod.betteredit), though I haven't figured out how can I make the buttons be added after [BetterEdit](mod:hjfod.betteredit) move buttons yet, so they appear between 1/2 and 1/4 move buttons.
 

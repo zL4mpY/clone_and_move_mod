@@ -8,14 +8,23 @@
 	},
 	"id": "loovigmd.clone_and_move",
 	"name": "Clone and Move",
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"developer": "loovigmd",
 	"description": "Adds Copy + Paste + Move buttons.",
+	"links": {
+		"source": "https://github.com/zL4mpY/clone_and_move_mod"
+	},
 	"resources": {
 		"spritesheets": {
 			"CloneAndMoveButton": [
 				"res/clone_and_move_button.png"
 			]
+		}
+	},
+	"dependencies": {
+		"geode.node-ids": {
+			"version": ">=v1.20.0",
+			"importance": "required"
 		}
 	},
 	"tags": [
