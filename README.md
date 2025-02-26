@@ -1,23 +1,22 @@
-# Copy+Paste+Move
-This is where she makes a mod.
+# Clone and Move Mod
+This mod adds 4 new buttons which allow you to copy and paste and then move object in any direction in 1 click.
+This mod may be useless on PC but useful on mobile.
 
-<img src="logo.png" width="150" alt="the mod's logo" />
+## How to use
+1. Place some object or select the existing ones.
+2. Go to Edit tab in bottom editor menu.
+3. Find 4 new move buttons which have the texture of a move button combined with a copy button.
+4. Click the button you need.
+5. The selected objects should be copied and pasted and moved in the direction of the button you have clicked.
 
-*Update logo.png to change your mod's icon (please)*
-
-## Getting started
-We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
+## Compatibility
+The mod should work fine with BetterEdit, though I haven't figured out how can I make the buttons be added after BetterEdit move buttons so they appear between 1/2 and 1/4 move buttons.
 
 ## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
 ```sh
 # Assuming you have the Geode CLI set up already
 geode build
 ```
 
-# Resources
-* [Geode SDK Documentation](https://docs.geode-sdk.org/)
-* [Geode SDK Source Code](https://github.com/geode-sdk/geode/)
-* [Geode CLI](https://github.com/geode-sdk/cli)
-* [Bindings](https://github.com/geode-sdk/bindings/)
-* [Dev Tools](https://github.com/geode-sdk/DevTools)
+---
+This is my first Geode mod and my first coding experience on C++ so I hope the mod is not very bad.
