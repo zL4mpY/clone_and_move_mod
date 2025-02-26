@@ -14,7 +14,7 @@
 	"resources": {
 		"spritesheets": {
 			"CloneAndMoveButton": [
-				"res/button.png"
+				"res/clone_and_move_button.png"
 			]
 		}
 	},
