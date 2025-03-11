@@ -8,7 +8,7 @@
 	},
 	"id": "loovigmd.clone_and_move",
 	"name": "Clone and Move",
-	"version": "v2.1.0",
+	"version": "v2.1.1",
 	"developer": "loovigmd",
 	"description": "Adds Copy + Paste + Move buttons.",
 	"links": {
@@ -29,7 +29,7 @@
 		"geode.custom-keybinds": {
 			"version": ">=1.10.3",
 			"importance": "required",
-			"platforms": ["win", "macos"]
+			"platforms": ["win", "mac-arm", "mac-intel"]
 		}
 	},
 	"settings": {

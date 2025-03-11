@@ -1,3 +1,6 @@
+# 2.1.1
+- The smallest bugfix ever
+
 # 2.1.0
 - Fixed the game crashing on cloning and moving StartPoses
 - Fixed the buttons order when using BetterEdit (thanks to [hiimjasmine00](https://github.com/hiimjasmine00) for helping)

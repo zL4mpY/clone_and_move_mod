@@ -177,7 +177,7 @@ class $modify(MyEditorUI, EditorUI) {
 				
 				// Doing this check since casting StartPos to GameObject crashes the mod
 				if (!object) {
-					auto* object = typeinfo_cast<StartPosObject*>(objects->objectAtIndex(i));
+					object = typeinfo_cast<StartPosObject*>(objects->objectAtIndex(i));
 					if (!object) {
 						FLAlertLayer::create("Error", "Unknown object type found. Please let the developer know about this bug.", "OK")->show();
 						return;
@@ -198,7 +198,7 @@ class $modify(MyEditorUI, EditorUI) {
 				
 				// Adding the check here too
 				if (!object) {
-					auto* object = typeinfo_cast<StartPosObject*>(copiedObjects->objectAtIndex(i));
+					object = typeinfo_cast<StartPosObject*>(copiedObjects->objectAtIndex(i));
 					if (!object) {
 						FLAlertLayer::create("Error", "Unknown object type found. Please let the developer know about this bug.", "OK")->show();
 						return;
@@ -221,7 +221,7 @@ class $modify(MyEditorUI, EditorUI) {
 
 				// And adding the check here
 				if (!object) {
-					auto* object = typeinfo_cast<StartPosObject*>(copiedObjects2->objectAtIndex(i));
+					object = typeinfo_cast<StartPosObject*>(copiedObjects2->objectAtIndex(i));
 					if (!object) {
 						FLAlertLayer::create("Error", "Unknown object type found. Please let the developer know about this bug.", "OK")->show();
 						return;
