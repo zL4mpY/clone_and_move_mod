@@ -5,8 +5,10 @@
 
 using namespace geode::prelude;
 
+#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 using namespace keybinds;
+#endif
 
 class $modify(MyEditorUI, EditorUI) {
 	static void onModify(auto& self) {
@@ -25,6 +27,8 @@ class $modify(MyEditorUI, EditorUI) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
 		}
+
+		#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
 			
 		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
 			if (event->isDown()) {
@@ -53,6 +57,8 @@ class $modify(MyEditorUI, EditorUI) {
 			}
 			return ListenerResult::Propagate;
 		}, "clone-and-move-obj-right"_spr);
+
+		#endif
 
 		// Creating an array of required values for buttons
 		const std::array<float, 4> rotations = {0, 180, 270, 90};
