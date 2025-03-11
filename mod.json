@@ -28,8 +28,7 @@
 		},
 		"geode.custom-keybinds": {
 			"version": ">=1.10.3",
-			"importance": "required",
-			"platforms": ["win", "mac-arm", "mac-intel"]
+			"importance": "required"
 		}
 	},
 	"settings": {
