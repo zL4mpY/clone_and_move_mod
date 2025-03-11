@@ -8,7 +8,7 @@
 	},
 	"id": "loovigmd.clone_and_move",
 	"name": "Clone and Move",
-	"version": "v2.0.0",
+	"version": "v2.1.0",
 	"developer": "loovigmd",
 	"description": "Adds Copy + Paste + Move buttons.",
 	"links": {
@@ -29,7 +29,16 @@
 		"geode.custom-keybinds": {
 			"version": ">=1.10.3",
 			"importance": "required",
-			"platforms": ["win"]
+			"platforms": ["win", "macos"]
+		}
+	},
+	"settings": {
+		"buttons-before-half-buttons": {
+		    "type": "bool",
+		    "name": "Add before half buttons",
+		    "description": "Makes the mod buttons add before RobTop's half move buttons. Works if BetterEdit is enabled.",
+		    "default": false,
+			"requires-restart": true
 		}
 	},
 	"tags": [

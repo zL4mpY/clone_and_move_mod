@@ -5,18 +5,30 @@
 
 using namespace geode::prelude;
 
-#if defined(GEODE_IS_WINDOWS)
+#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 using namespace keybinds;
 #endif
 
 class $modify(MyEditorUI, EditorUI) {
+	static void onModify(auto& self) {
+		auto addButonsBeforeHalf = Mod::get()->getSettingValue<bool>("buttons-before-half-buttons");
+
+		if (Loader::get()->isModLoaded("hjfod.betteredit")) {
+			if (!addButonsBeforeHalf) {
+				if (!self.setHookPriorityAfterPost("EditorUI::init", "hjfod.betteredit")) {
+					geode::log::warn("Failed to set hook priority.");
+				}
+			}
+		}
+	}
+
 	bool init(LevelEditorLayer* editorLayer) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
 		}
 
-		#if defined(GEODE_IS_WINDOWS)
+		#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
 			
 		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
 			if (event->isDown()) {
@@ -47,6 +59,55 @@ class $modify(MyEditorUI, EditorUI) {
 		}, "clone-and-move-obj-right"_spr);
 
 		#endif
+
+		// Creating an array of required values for buttons
+		const std::array<float, 4> rotations = {0, 180, 270, 90};
+
+		std::array<char const*, 4> spriteIDs = {
+			"clone_and_move_upBtn.png"_spr,
+			"clone_and_move_downBtn.png"_spr,
+			"clone_and_move_leftBtn.png"_spr,
+			"clone_and_move_rightBtn.png"_spr
+		};
+
+		std::array<std::string, 4> buttonIDs = {
+			"move-up-move-clone-button"_spr, 
+			"move-down-move-clone-button"_spr, 
+			"move-left-move-clone-button"_spr, 
+			"move-right-move-clone-button"_spr
+		};
+
+		int firstHalfButtonIndex = 0;
+
+		auto addButonsBeforeHalf = Mod::get()->getSettingValue<bool>("buttons-before-half-buttons");
+		if (addButonsBeforeHalf) {
+			firstHalfButtonIndex = m_editButtonBar->m_buttonArray->indexOfObject(m_editButtonBar->getChildByIDRecursive("move-up-half-button"));
+		}
+
+		// Adding 4 mod buttons here
+		for (int i = 0; i < 4; i++) {
+			auto spriteID = spriteIDs[i];
+		    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
+		    // copyAndMoveBtn->setRotation(rotations[i]);
+
+			// Setting a tag so we can check which button is being pressed
+		    copyAndMoveBtn->setTag(i + 1);
+			copyAndMoveBtn->setID(buttonIDs[i]);
+
+			// Adding the button to the Edit tab
+			if (addButonsBeforeHalf) {
+				m_editButtonBar->m_buttonArray->insertObject(copyAndMoveBtn, firstHalfButtonIndex + i);
+			} else {
+				m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
+			}
+		}
+
+		auto rows = GameManager::sharedState()->getIntGameVariable("0049");
+		auto cols = GameManager::sharedState()->getIntGameVariable("0050");
+		
+		// Updating the Edit tab
+		// not using reloadItems because for some reason it bugs the menu when BE's new edit menu is disabled
+		m_editButtonBar->loadFromItems(m_editButtonBar->m_buttonArray, rows, cols, true);
 
 		return true;
 	}
@@ -112,33 +173,61 @@ class $modify(MyEditorUI, EditorUI) {
 				Code credits to undefined06855 on Geode Discord for this block of code
 			*/
 			for (int i = 0 ; i < objects->count() ; i++) {
-				auto* object = static_cast<GameObject*>(objects->objectAtIndex(i));
+				auto* object = typeinfo_cast<GameObject*>(objects->objectAtIndex(i));
+				
+				// Doing this check since casting StartPos to GameObject crashes the mod
+				if (!object) {
+					auto* object = typeinfo_cast<StartPosObject*>(objects->objectAtIndex(i));
+					if (!object) {
+						FLAlertLayer::create("Error", "Unknown object type found. Please let the developer know about this bug.", "OK")->show();
+						return;
+					}
+				}
+
 				auto objectString = static_cast<std::string>(object->getSaveString(GJBaseGameLayer::get())) + ";";
 				objectStrings += objectString;
 			}
 
 			// Create the copied objects
 			auto levelEditorLayer = LevelEditorLayer::get();
-			levelEditorLayer->createObjectsFromString(gd::string(objectStrings), true, true);
-			auto copiedObjects = CCArray::create();
+			auto copiedObjects = levelEditorLayer->createObjectsFromString(gd::string(objectStrings), true, true);
+			auto copiedObjects2 = CCArray::create();
 
-			auto newObjectCount = levelEditorLayer->m_objectCount;
-			for (int i = newObjectCount - 1 ; i > newObjectCount - objects->count() - 1; i--) {
-				auto* object = static_cast<GameObject*>(levelEditorLayer->m_objects->objectAtIndex(i));
-				auto objectPosition = object->getPosition();
+			for (int i = 0 ; i < copiedObjects->count() ; i++) {
+				auto* object = typeinfo_cast<GameObject*>(copiedObjects->objectAtIndex(i));
 				
+				// Adding the check here too
+				if (!object) {
+					auto* object = typeinfo_cast<StartPosObject*>(copiedObjects->objectAtIndex(i));
+					if (!object) {
+						FLAlertLayer::create("Error", "Unknown object type found. Please let the developer know about this bug.", "OK")->show();
+						return;
+					}
+				}
+
+				auto objectPosition = object->getPosition();
 				object->setPosition(objectPosition + CCPoint{deltaX, deltaY}); // Moving copied objects
-				copiedObjects->addObject(object);
+				copiedObjects2->addObject(object);
 			}
 
 			// Deselect previous objects and then selecting the copied ones
 			this->deselectAll();
-			levelEditorLayer->m_undoObjects->addObject(UndoObject::createWithArray(copiedObjects, UndoCommand::Paste));
-			this->selectObjects(copiedObjects, true);
+			levelEditorLayer->m_undoObjects->addObject(UndoObject::createWithArray(copiedObjects2, UndoCommand::Paste));
+			this->selectObjects(copiedObjects2, true);
 
 			// Recoloring them so they look like they are copypasted
-			for (int i = 0 ; i < copiedObjects->count() ; i++) {
-				auto* object = static_cast<GameObject*>(copiedObjects->objectAtIndex(i));
+			for (int i = 0 ; i < copiedObjects2->count() ; i++) {
+				auto* object = typeinfo_cast<GameObject*>(copiedObjects2->objectAtIndex(i));
+
+				// And adding the check here
+				if (!object) {
+					auto* object = typeinfo_cast<StartPosObject*>(copiedObjects2->objectAtIndex(i));
+					if (!object) {
+						FLAlertLayer::create("Error", "Unknown object type found. Please let the developer know about this bug.", "OK")->show();
+						return;
+					}
+				}
+
 				object->updateMainColor(ccColor3B{0, 255, 255});
 				object->updateSecondaryColor(ccColor3B{0, 204, 204});
 			}
@@ -151,45 +240,4 @@ class $modify(MyEditorUI, EditorUI) {
 	void onButtonsClick(CCObject* sender) {
 		cloneAndMoveObjects(sender->getTag()-1);
     }
-
-	void createMoveMenu() {
-		EditorUI::createMoveMenu();
-
-		// Creating an array of required values for buttons
-		const std::array<float, 4> rotations = {0, 180, 270, 90};
-
-		const std::array<char const*, 4> spriteIDs = {
-			"clone_and_move_upBtn.png"_spr,
-			"clone_and_move_downBtn.png"_spr,
-			"clone_and_move_leftBtn.png"_spr,
-			"clone_and_move_rightBtn.png"_spr
-		};
-
-		const std::array<std::string, 4> buttonIDs = {
-			"move-up-move-clone-button"_spr, 
-			"move-down-move-clone-button"_spr, 
-			"move-left-move-clone-button"_spr, 
-			"move-right-move-clone-button"_spr
-		};
-
-		// Adding 4 mod buttons here
-		for (int i = 0; i < 4; i++) {
-			auto spriteID = spriteIDs[i];
-		    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
-		    // copyAndMoveBtn->setRotation(rotations[i]);
-
-			// Setting a tag so we can check which button is being pressed
-		    copyAndMoveBtn->setTag(i + 1);
-			copyAndMoveBtn->setID(buttonIDs[i]);
-
-			// Adding the button to the Edit tab
-		    m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
-		}
-
-		auto rows = GameManager::sharedState()->getIntGameVariable("0049");
-		auto cols = GameManager::sharedState()->getIntGameVariable("0050");
-		
-		// Updating the Edit tab
-		m_editButtonBar->reloadItems(rows, cols);
-	}
 };

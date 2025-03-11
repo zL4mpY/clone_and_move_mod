@@ -13,13 +13,17 @@ This mod may be useless on PC but useful on mobile.
 5. The selected objects should be copied and pasted and moved in the direction of the button you have clicked.
 
 ## Compatibility
-The mod should work fine with [BetterEdit](mod:hjfod.betteredit), though I haven't figured out how can I make the buttons be added after [BetterEdit](mod:hjfod.betteredit) move buttons yet, so they appear between 1/2 and 1/4 move buttons.
+The mod works with [BetterEdit](mod:hjfod.betteredit). You can change the order of the buttons to make them appear before half move buttons or after all move buttons (including BetterEdit ones).
 
 ## Keybinds
-The mod has its own keybinds (only for Windows because I can't test mods on Mac due to not having it), which are not configured by default. You can set the keybinds in the Custom Keybinds menu.
+The mod has its own keybinds, which are not configured by default. You can set the keybinds in the Custom Keybinds menu.
 
 ## Issues
 If the mod has any issues or even makes the game crash, please let me know about it by creating an issue on [GitHub repository](https://github.com/zL4mpY/clone_and_move_mod) or writing me in Discord DMs (loovigmd).
 
 ## Credits
 - [undefined0](https://github.com/undefined06855) - code for manually duplicating objects
+- [hiimjasmine00](https://github.com/hiimjasmine00) - helping me to fix the problem with buttons ordering with BetterEdit enabled
+
+## License
+This mod is licensed under the MIT license.
