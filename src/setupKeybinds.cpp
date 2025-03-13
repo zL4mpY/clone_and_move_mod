@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 
-#ifdef GEODE_IS_WINDOWS
+#if (defined(GEODE_IS_WINDOWS))
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 
 using namespace keybinds;

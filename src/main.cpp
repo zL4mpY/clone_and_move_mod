@@ -5,7 +5,7 @@
 
 using namespace geode::prelude;
 
-#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
+#if (defined(GEODE_IS_WINDOWS))
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 using namespace keybinds;
 #endif
@@ -28,7 +28,7 @@ class $modify(MyEditorUI, EditorUI) {
 			return false;
 		}
 
-		#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
+		#if (defined(GEODE_IS_WINDOWS))
 			
 		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
 			if (event->isDown()) {

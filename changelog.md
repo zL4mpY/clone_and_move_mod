@@ -1,3 +1,6 @@
+# 2.1.2
+- Temporarily removed Custom Keybinds support for Mac due to mod not loading because of this
+
 # 2.1.1
 - The smallest bugfix ever
 
