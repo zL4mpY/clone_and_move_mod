@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 
-#if (defined(GEODE_IS_WINDOWS))
+#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 
 using namespace keybinds;

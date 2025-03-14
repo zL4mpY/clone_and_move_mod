@@ -29,7 +29,7 @@
 		"geode.custom-keybinds": {
 			"version": ">=1.10.3",
 			"importance": "required",
-			"platforms": ["win"]
+			"platforms": ["win", "macos"]
 		}
 	},
 	"settings": {
