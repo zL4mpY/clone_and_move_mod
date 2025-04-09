@@ -28,16 +28,42 @@ std::array<std::string, 4> buttonIDs = {
 };
 
 std::string requiredButtonId = "move-right-tiny-button";
+std::string relocateButtonsType = "Default";
+std::map<std::string, int> relocateButtonsTypes;
 std::vector<CCMenuItemSpriteExtra*> modButtons;
 
 $execute {
-	auto value = Mod::get()->getSettingValue<bool>("buttons-before-half-buttons");
-	if (value) { requiredButtonId = "move-right-tiny-button"; }
-	else { requiredButtonId = "hjfod.betteredit/move-right-unit-button"; }
+	relocateButtonsTypes.insert(std::map<std::string, int>::value_type("Before Half Move Buttons", 0));
+	relocateButtonsTypes.insert(std::map<std::string, int>::value_type("Default", 1));
+	relocateButtonsTypes.insert(std::map<std::string, int>::value_type("After Move Unit Buttons", 2));
+	relocateButtonsTypes.insert(std::map<std::string, int>::value_type("End", 3));
+
+	relocateButtonsType = Mod::get()->getSettingValue<std::string>("buttons-before-half-buttons");
+	int relocateButtonsTypeValue = relocateButtonsTypes.at(relocateButtonsType);
+
+	switch (relocateButtonsTypeValue) {
+		case 0:
+			requiredButtonId = "move-right-tiny-button";
+			break;
+		
+		case 2:
+			requiredButtonId = "hjfod.betteredit/move-right-unit-button";
+			break;
+	}
 	
-    listenForSettingChanges("buttons-before-half-buttons", [](bool value) {
-        if (value) { requiredButtonId = "move-right-tiny-button"; }
-		else { requiredButtonId = "hjfod.betteredit/move-right-unit-button";}
+    listenForSettingChanges("buttons-before-half-buttons", [](std::string value) {
+		relocateButtonsType = value;
+		int relocateButtonsTypeValue = relocateButtonsTypes.at(relocateButtonsType);
+
+		switch (relocateButtonsTypeValue) {
+			case 0:
+				requiredButtonId = "move-right-tiny-button";
+				break;
+			
+			case 2:
+				requiredButtonId = "hjfod.betteredit/move-right-unit-button";
+				break;
+		}
     });
 }
 
@@ -255,51 +281,59 @@ class $modify(MyEditorUI, EditorUI) {
 // New moving buttons logic made with help from kuel27! Thank you!
 class $modify(EditButtonBar) {
     $override
-	void loadFromItems(CCArray *items, int r, int c, bool unkBool) {	
-		if (this->getID() == "edit-tab-bar") {
-    	    if (modButtons.size() > 0) {
-    	        int requiredButtonIndex = -1;
-    	        for (int i = 0; i < items->count(); i++) {
-    	            auto button = static_cast<CCNode*>(items->objectAtIndex(i));
-				
-    	            if (button->getID() == requiredButtonId) {
-    	                requiredButtonIndex = i;
-    	                break;
-    	            }
-    	        }
+	void loadFromItems(CCArray *items, int r, int c, bool unkBool) {
+		if (relocateButtonsType != "Default") {
+			if (this->getID() == "edit-tab-bar") {
+    		    if (modButtons.size() > 0) {
+    		        int requiredButtonIndex = -1;
+					if (relocateButtonsType == "End") {
+						requiredButtonIndex = items->count() - 1;
+					}
 
-    	        if (requiredButtonIndex >= 0) {
-    	            CCArray *modifiedItems = CCArray::create();
+					if (requiredButtonIndex == -1) {
+    		    	    for (int i = 0; i < items->count(); i++) {
+    		    	        auto button = static_cast<CCNode*>(items->objectAtIndex(i));
+						
+    		    	        if (button->getID() == requiredButtonId) {
+    		    	            requiredButtonIndex = i;
+    		    	            break;
+    		    	        }
+    		    	    }
+					}
 
-    	            for (int i = 0; i < items->count(); i++) {
-    	                auto button = static_cast<CCNode *>(items->objectAtIndex(i));
+    		        if (requiredButtonIndex >= 0) {
+    		            CCArray *modifiedItems = CCArray::create();
 
-    	                bool shouldRemove = false;
-    	                for (const auto &id : buttonIDs) {
-    	                    if (button->getID() == id) {
-    	                        shouldRemove = true;
-    	                        break;
-    	                    }
-    	                }
+    		            for (int i = 0; i < items->count(); i++) {
+    		                auto button = static_cast<CCNode *>(items->objectAtIndex(i));
 
-    	                if (!shouldRemove) {
-    	                    modifiedItems->addObject(button);
-    	                }
+    		                bool shouldRemove = false;
+    		                for (const auto &id : buttonIDs) {
+    		                    if (button->getID() == id) {
+    		                        shouldRemove = true;
+    		                        break;
+    		                    }
+    		                }
 
-    	                if (i == requiredButtonIndex) {
-							for (int j = 0 ; j < modButtons.size() ; j++) {
-								auto button = modButtons.at(j);
-    	                    	modifiedItems->addObject(button);
-							}
-    	                }
-    	            }
+    		                if (!shouldRemove) {
+    		                    modifiedItems->addObject(button);
+    		                }
 
-    	            EditButtonBar::loadFromItems(modifiedItems, r, c, unkBool);
-    	            return;
-    	        } else {
-    	            log::warn("Required button '{}' not found, using original layout", requiredButtonId);
-    	        }
-    	    }
+    		                if (i == requiredButtonIndex) {
+								for (int j = 0 ; j < modButtons.size() ; j++) {
+									auto button = modButtons.at(j);
+    		                    	modifiedItems->addObject(button);
+								}
+    		                }
+    		            }
+
+    		            EditButtonBar::loadFromItems(modifiedItems, r, c, unkBool);
+    		            return;
+    		        } else {
+    		            log::warn("Required button '{}' not found, using original layout", requiredButtonId);
+    		        }
+    		    }
+			}
 		}
 
         EditButtonBar::loadFromItems(items, r, c, unkBool);

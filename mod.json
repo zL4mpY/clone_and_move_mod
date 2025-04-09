@@ -34,10 +34,11 @@
 	},
 	"settings": {
 		"buttons-before-half-buttons": {
-		    "type": "bool",
-		    "name": "Relocate buttons to the end",
-		    "description": "Relocates mod buttons to the end of all buttons, at least RobTop's ones.",
-		    "default": true
+		    "type": "string",
+		    "name": "Relocate buttons",
+		    "description": "Relocates move buttons up to your wish. Note: relocating after move unit buttons will work only if BetterEdit is enabled. If i",
+		    "default": "Default",
+			"one-of": ["Before Half Move Buttons", "Default", "After Move Unit Buttons", "End"]
 		}
 	},
 	"tags": [

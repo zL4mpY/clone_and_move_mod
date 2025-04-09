@@ -1,8 +1,10 @@
 # 2.2.0
-- Revamped relocating buttons logic, which should fix the mod with Relocating Editor Buttons mod enabled. Thanks to kuel27 for helping me revamping it and [hiimjasmine00](https://github.com/hiimjasmine00) for helping me fix my errors!
+- Revamped relocating buttons logic, which should fix the mod with Relocating Editor Buttons mod enabled. Thanks to [kuel27](https://github.com/kuel27) for helping me revamping it and [hiimjasmine00](https://github.com/hiimjasmine00) for helping me fix my errors!
 - iOS support
 - Custom Keybinds support for MacOS (again)
 - You don't have to restart your game now after changing the settings to make them apply
+- Added other types of relocating buttons
+- Changed the name and the description of the only setting of the mod
 
 # 2.1.2
 - Temporarily removed Custom Keybinds support for Mac due to mod not loading because of this
