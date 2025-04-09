@@ -1,5 +1,5 @@
 {
-	"geode": "4.2.0",
+	"geode": "4.3.1",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -8,7 +8,7 @@
 	},
 	"id": "loovigmd.clone_and_move",
 	"name": "Clone and Move",
-	"version": "v2.1.2",
+	"version": "v2.2.0",
 	"developer": "loovigmd",
 	"description": "Adds Copy + Paste + Move buttons.",
 	"links": {
@@ -35,13 +35,12 @@
 	"settings": {
 		"buttons-before-half-buttons": {
 		    "type": "bool",
-		    "name": "Add before half buttons",
-		    "description": "Makes the mod buttons add before RobTop's half move buttons. Works if BetterEdit is enabled.",
-		    "default": false,
-			"requires-restart": true
+		    "name": "Relocate buttons to the end",
+		    "description": "Relocates mod buttons to the end of all buttons, at least RobTop's ones.",
+		    "default": true
 		}
 	},
 	"tags": [
-		"editor"
+		"editor", "enhancement", "offline"
 	]
 }

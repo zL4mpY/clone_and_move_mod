@@ -26,7 +26,8 @@ geode build
 
 ## Credits
 - [undefined0](https://github.com/undefined06855) - code for manually duplicating objects
-- [hiimjasmine00](https://github.com/hiimjasmine00) - helping me to fix the problem with buttons ordering with BetterEdit enabled
+- [hiimjasmine00](https://github.com/hiimjasmine00) - helping me to fix the problem with buttons ordering with BetterEdit enabled and my errors in new relocating buttons logic.
+- [kuel27](https://github.com/kuel27) - helping me to make the new relocating buttons logic
 
 ## License
 This mod is licensed under the MIT license. See the details in [LICENSE.md](LICENSE.md)

@@ -2,6 +2,7 @@
 
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
+#include <Geode/modify/EditButtonBar.hpp>
 
 using namespace geode::prelude;
 
@@ -10,24 +11,78 @@ using namespace geode::prelude;
 using namespace keybinds;
 #endif
 
+const std::array<float, 4> rotations = {0, 180, 270, 90};
+
+std::array<char const*, 4> spriteIDs = {
+	"clone_and_move_upBtn.png"_spr,
+	"clone_and_move_downBtn.png"_spr,
+	"clone_and_move_leftBtn.png"_spr,
+	"clone_and_move_rightBtn.png"_spr
+};
+
+std::array<std::string, 4> buttonIDs = {
+	"move-up-move-clone-button"_spr, 
+	"move-down-move-clone-button"_spr, 
+	"move-left-move-clone-button"_spr, 
+	"move-right-move-clone-button"_spr
+};
+
+std::string requiredButtonId = "move-right-tiny-button";
+std::vector<CCMenuItemSpriteExtra*> modButtons;
+
+$execute {
+	auto value = Mod::get()->getSettingValue<bool>("buttons-before-half-buttons");
+	if (value) { requiredButtonId = "move-right-tiny-button"; }
+	else { requiredButtonId = "hjfod.betteredit/move-right-unit-button"; }
+	
+    listenForSettingChanges("buttons-before-half-buttons", [](bool value) {
+        if (value) { requiredButtonId = "move-right-tiny-button"; }
+		else { requiredButtonId = "hjfod.betteredit/move-right-unit-button";}
+    });
+}
+
 class $modify(MyEditorUI, EditorUI) {
-	static void onModify(auto& self) {
-		auto addButonsBeforeHalf = Mod::get()->getSettingValue<bool>("buttons-before-half-buttons");
-
-		if (Loader::get()->isModLoaded("hjfod.betteredit")) {
-			if (!addButonsBeforeHalf) {
-				if (!self.setHookPriorityAfterPost("EditorUI::init", "hjfod.betteredit")) {
-					geode::log::warn("Failed to set hook priority.");
-				}
-			}
+	struct Fields {
+		~Fields() {
+			modButtons.clear();
 		}
-	}
+	};
 
+	$override
 	bool init(LevelEditorLayer* editorLayer) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
 		}
 
+		this->createKeybinds();
+
+		// Adding 4 mod buttons here
+		for (int i = 0; i < 4; i++) {
+			auto spriteID = spriteIDs[i];
+		    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
+
+			// Setting a tag so we can check which button is being pressed
+		    copyAndMoveBtn->setTag(i + 1);
+			copyAndMoveBtn->setID(buttonIDs[i]);
+
+			m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
+			modButtons.push_back(copyAndMoveBtn);
+		}
+
+		auto rows = GameManager::sharedState()->getIntGameVariable("0049");
+		auto cols = GameManager::sharedState()->getIntGameVariable("0050");
+
+		// Updating the Edit tab
+		// not using reloadItems because for some reason it bugs the menu when BE's new edit menu is disabled
+		m_editButtonBar->loadFromItems(m_editButtonBar->m_buttonArray, rows, cols, true);
+
+		// Accessing the fields here to make modButtons vector clear on Fields destructuring
+		this->m_fields.self();
+
+		return true;
+	}
+
+	void createKeybinds() {
 		#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
 			
 		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
@@ -59,57 +114,6 @@ class $modify(MyEditorUI, EditorUI) {
 		}, "clone-and-move-obj-right"_spr);
 
 		#endif
-
-		// Creating an array of required values for buttons
-		const std::array<float, 4> rotations = {0, 180, 270, 90};
-
-		std::array<char const*, 4> spriteIDs = {
-			"clone_and_move_upBtn.png"_spr,
-			"clone_and_move_downBtn.png"_spr,
-			"clone_and_move_leftBtn.png"_spr,
-			"clone_and_move_rightBtn.png"_spr
-		};
-
-		std::array<std::string, 4> buttonIDs = {
-			"move-up-move-clone-button"_spr, 
-			"move-down-move-clone-button"_spr, 
-			"move-left-move-clone-button"_spr, 
-			"move-right-move-clone-button"_spr
-		};
-
-		int firstHalfButtonIndex = 0;
-
-		auto addButonsBeforeHalf = Mod::get()->getSettingValue<bool>("buttons-before-half-buttons");
-		if (addButonsBeforeHalf) {
-			firstHalfButtonIndex = m_editButtonBar->m_buttonArray->indexOfObject(m_editButtonBar->getChildByIDRecursive("move-up-half-button"));
-		}
-
-		// Adding 4 mod buttons here
-		for (int i = 0; i < 4; i++) {
-			auto spriteID = spriteIDs[i];
-		    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
-		    // copyAndMoveBtn->setRotation(rotations[i]);
-
-			// Setting a tag so we can check which button is being pressed
-		    copyAndMoveBtn->setTag(i + 1);
-			copyAndMoveBtn->setID(buttonIDs[i]);
-
-			// Adding the button to the Edit tab
-			if (addButonsBeforeHalf) {
-				m_editButtonBar->m_buttonArray->insertObject(copyAndMoveBtn, firstHalfButtonIndex + i);
-			} else {
-				m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
-			}
-		}
-
-		auto rows = GameManager::sharedState()->getIntGameVariable("0049");
-		auto cols = GameManager::sharedState()->getIntGameVariable("0050");
-		
-		// Updating the Edit tab
-		// not using reloadItems because for some reason it bugs the menu when BE's new edit menu is disabled
-		m_editButtonBar->loadFromItems(m_editButtonBar->m_buttonArray, rows, cols, true);
-
-		return true;
 	}
 
 	void cloneAndMoveObjects(int direction) {
@@ -128,17 +132,22 @@ class $modify(MyEditorUI, EditorUI) {
 			/*
 				If Better Move Buttons Menu exists then we get its step size from its text input object
 				In case if that mod gets accepted to the index because it is cool
+				(Not included for now because I will probably update it and it also started crashing for no reason)
 			*/
-			if (this->querySelector("better-move-buttons-menu")) {
-				auto* betterMoveMenu = static_cast<CCMenu*>(this->querySelector("better-move-buttons-menu"));
-				auto stepInput = static_cast<TextInput*>(betterMoveMenu->getChildByType<TextInput>(0));
-				gridSize = std::stof(stepInput->getString());
+			/* if (this->querySelector("better-move-buttons-menu")) {
+			   	auto* betterMoveMenu = static_cast<CCMenu*>(this->querySelector("better-move-buttons-menu"));
+			   	auto stepInput = static_cast<TextInput*>(betterMoveMenu->getChildByType<TextInput>(0));
+			   	gridSize = std::stof(stepInput->getString());
 
-			// Else we get the grid size of editor
-			} else {
-				this->updateGridNodeSize();
-				gridSize = this->m_gridSize;
-			}
+			   // Else we get the grid size of editor
+			   } else {
+			   	this->updateGridNodeSize();
+			   	gridSize = this->m_gridSize;
+			   }
+			*/
+
+			this->updateGridNodeSize();
+			gridSize = this->m_gridSize;
 
 			auto objects = this->getSelectedObjects();
 			std::string objectStrings = "";
@@ -239,5 +248,60 @@ class $modify(MyEditorUI, EditorUI) {
 
 	void onButtonsClick(CCObject* sender) {
 		cloneAndMoveObjects(sender->getTag()-1);
+    }
+};
+
+
+// New moving buttons logic made with help from kuel27! Thank you!
+class $modify(EditButtonBar) {
+    $override
+	void loadFromItems(CCArray *items, int r, int c, bool unkBool) {	
+		if (this->getID() == "edit-tab-bar") {
+    	    if (modButtons.size() > 0) {
+    	        int requiredButtonIndex = -1;
+    	        for (int i = 0; i < items->count(); i++) {
+    	            auto button = static_cast<CCNode*>(items->objectAtIndex(i));
+				
+    	            if (button->getID() == requiredButtonId) {
+    	                requiredButtonIndex = i;
+    	                break;
+    	            }
+    	        }
+
+    	        if (requiredButtonIndex >= 0) {
+    	            CCArray *modifiedItems = CCArray::create();
+
+    	            for (int i = 0; i < items->count(); i++) {
+    	                auto button = static_cast<CCNode *>(items->objectAtIndex(i));
+
+    	                bool shouldRemove = false;
+    	                for (const auto &id : buttonIDs) {
+    	                    if (button->getID() == id) {
+    	                        shouldRemove = true;
+    	                        break;
+    	                    }
+    	                }
+
+    	                if (!shouldRemove) {
+    	                    modifiedItems->addObject(button);
+    	                }
+
+    	                if (i == requiredButtonIndex) {
+							for (int j = 0 ; j < modButtons.size() ; j++) {
+								auto button = modButtons.at(j);
+    	                    	modifiedItems->addObject(button);
+							}
+    	                }
+    	            }
+
+    	            EditButtonBar::loadFromItems(modifiedItems, r, c, unkBool);
+    	            return;
+    	        } else {
+    	            log::warn("Required button '{}' not found, using original layout", requiredButtonId);
+    	        }
+    	    }
+		}
+
+        EditButtonBar::loadFromItems(items, r, c, unkBool);
     }
 };
