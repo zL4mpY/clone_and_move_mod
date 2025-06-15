@@ -1,5 +1,5 @@
 {
-	"geode": "4.3.1",
+	"geode": "4.5.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -29,7 +29,7 @@
 		"geode.custom-keybinds": {
 			"version": ">=1.10.3",
 			"importance": "required",
-			"platforms": ["win", "macos"]
+			"platforms": ["win", "macos", "mac-intel", "mac-arm"]
 		}
 	},
 	"settings": {
