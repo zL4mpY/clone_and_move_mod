@@ -6,11 +6,6 @@
 
 using namespace geode::prelude;
 
-#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
-#include <geode.custom-keybinds/include/Keybinds.hpp>
-using namespace keybinds;
-#endif
-
 const std::array<float, 4> rotations = {0, 180, 270, 90};
 
 std::array<char const*, 4> spriteIDs = {
@@ -51,7 +46,7 @@ $execute {
 			break;
 	}
 	
-    listenForSettingChanges("buttons-before-half-buttons", [](std::string value) {
+    listenForSettingChanges<std::string>("buttons-before-half-buttons", [](std::string value) {
 		relocateButtonsType = value;
 		int relocateButtonsTypeValue = relocateButtonsTypes.at(relocateButtonsType);
 
@@ -109,37 +104,41 @@ class $modify(MyEditorUI, EditorUI) {
 	}
 
 	void createKeybinds() {
-		#if (defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS))
-			
-		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-			if (event->isDown()) {
-				cloneAndMoveObjects(0);
-			}
-			return ListenerResult::Propagate;
-		}, "clone-and-move-obj-up"_spr);
-	
-		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-			if (event->isDown()) {
-				cloneAndMoveObjects(1);
-			}
-			return ListenerResult::Propagate;
-		}, "clone-and-move-obj-down"_spr);
-	
-		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-			if (event->isDown()) {
-				cloneAndMoveObjects(2);
-			}
-			return ListenerResult::Propagate;
-		}, "clone-and-move-obj-left"_spr);
-	
-		this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-			if (event->isDown()) {
-				cloneAndMoveObjects(3);
-			}
-			return ListenerResult::Propagate;
-		}, "clone-and-move-obj-right"_spr);
+		this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "clone-and-move-obj-up-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    cloneAndMoveObjects(0);
+                }
+            }
+        );
 
-		#endif
+		this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "clone-and-move-obj-down-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    cloneAndMoveObjects(1);
+                }
+            }
+        );
+
+		this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "clone-and-move-obj-left-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    cloneAndMoveObjects(2);
+                }
+            }
+        );
+
+		this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "clone-and-move-obj-right-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    cloneAndMoveObjects(3);
+                }
+            }
+        );
 	}
 
 	void cloneAndMoveObjects(int direction) {
