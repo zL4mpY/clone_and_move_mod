@@ -1,5 +1,5 @@
 {
-	"geode": "5.0.0",
+	"geode": "5.3.0",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -8,7 +8,7 @@
 	},
 	"id": "loovigmd.clone_and_move",
 	"name": "Clone and Move",
-	"version": "v2.2.1",
+	"version": "v2.3.0",
 	"developer": "enimeoww",
 	"description": "Adds Copy + Paste + Move buttons.",
 	"links": {
@@ -31,9 +31,25 @@
 		"buttons-before-half-buttons": {
 		    "type": "string",
 		    "name": "Relocate buttons",
-		    "description": "Relocates move buttons up to your wish. Note: relocating after move unit buttons will work only if BetterEdit is enabled. If i",
+		    "description": "Relocates move buttons up to your wish. Note: relocating after move unit buttons will work only if BetterEdit is enabled.",
 		    "default": "Default",
 			"one-of": ["Before Half Move Buttons", "Default", "After Move Unit Buttons", "End"]
+		},
+		"move-step": {
+		    "type": "float",
+		    "name": "Move step",
+		    "description": "Changes the move step for the buttons.",
+		    "default": 1.0,
+			"min": 0,
+			"control": {
+				"slider": true,
+				"input": true,
+				"arrows": true,
+				"big-arrows": true,
+				"slider-step": 0.5,
+				"big-arrow-step": 0.5,
+				"arrow-step": 0.25
+			}
 		},
 		"clone-and-move-obj-up-keybind": {
 			"type": "keybind",

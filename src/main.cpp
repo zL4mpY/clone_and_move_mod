@@ -1,8 +1,10 @@
+#include "Geode/loader/SettingV3.hpp"
 #include <Geode/Geode.hpp>
 
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/EditButtonBar.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 
 using namespace geode::prelude;
 
@@ -26,6 +28,7 @@ std::string requiredButtonId = "move-right-tiny-button";
 std::string relocateButtonsType = "Default";
 std::map<std::string, int> relocateButtonsTypes;
 std::vector<CCMenuItemSpriteExtra*> modButtons;
+float moveStep = 1.0f;
 
 $execute {
 	relocateButtonsTypes.insert(std::map<std::string, int>::value_type("Before Half Move Buttons", 0));
@@ -45,6 +48,12 @@ $execute {
 			requiredButtonId = "hjfod.betteredit/move-right-unit-button";
 			break;
 	}
+
+	moveStep = Mod::get()->getSettingValue<float>("move-step");
+
+	listenForSettingChanges<float>("move-step", [](float value) {
+		moveStep = value;
+	});
 	
     listenForSettingChanges<std::string>("buttons-before-half-buttons", [](std::string value) {
 		relocateButtonsType = value;
@@ -89,6 +98,11 @@ class $modify(MyEditorUI, EditorUI) {
 			m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
 			modButtons.push_back(copyAndMoveBtn);
 		}
+
+		auto* modSettingsBtn = this->getSpriteButton("clone_and_move_optionsBtn.png"_spr, menu_selector(MyEditorUI::onSettingsPopup), nullptr, 1.0f);
+		modSettingsBtn->setID("options-move-clone-button"_spr);
+		m_editButtonBar->m_buttonArray->addObject(modSettingsBtn);
+		modButtons.push_back(modSettingsBtn);
 
 		auto rows = GameManager::sharedState()->getIntGameVariable("0049");
 		auto cols = GameManager::sharedState()->getIntGameVariable("0050");
@@ -202,6 +216,9 @@ class $modify(MyEditorUI, EditorUI) {
 					break;
 			}
 
+			deltaX *= moveStep;
+			deltaY *= moveStep;
+
 			/*
 				Copying the selected objects, saving their strings first
 				Code credits to undefined06855 on Geode Discord for this block of code
@@ -274,6 +291,10 @@ class $modify(MyEditorUI, EditorUI) {
 	void onButtonsClick(CCObject* sender) {
 		cloneAndMoveObjects(sender->getTag()-1);
     }
+
+	void onSettingsPopup(CCObject* sender) {
+		openSettingsPopup(Mod::get());
+	}
 };
 
 
@@ -325,6 +346,9 @@ class $modify(EditButtonBar) {
 								}
     		                }
     		            }
+
+						this->m_buttonArray->removeAllObjects();
+						this->m_buttonArray->addObjectsFromArray(modifiedItems);
 
     		            EditButtonBar::loadFromItems(modifiedItems, r, c, unkBool);
     		            return;

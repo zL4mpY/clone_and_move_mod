@@ -1,5 +1,7 @@
-# 2.2.1
+# 2.3.0
 - Update to GD 2.2081
+- Added Move Step setting
+- Added mod setting shortcut in edit buttons bar
 
 # 2.2.0
 - Revamped relocating buttons logic, which should fix the mod with [Repeating Editor Buttons](alphalaneous.repeating_editor_buttons) mod enabled. Thanks to [kuel27](https://github.com/kuel27) for helping me revamping it and [hiimjasmine00](https://github.com/hiimjasmine00) for helping me fix my errors!
