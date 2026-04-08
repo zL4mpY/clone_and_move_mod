@@ -72,6 +72,12 @@ $execute {
 }
 
 class $modify(MyEditorUI, EditorUI) {
+	static void onModify(auto& self) {
+		if (!self.setHookPriorityAfterPost("EditorUI::init", "hjfod.betteredit")) {
+            geode::log::warn("Failed to set hook priority.");
+        }
+		
+	}
 	struct Fields {
 		~Fields() {
 			modButtons.clear();
@@ -79,6 +85,43 @@ class $modify(MyEditorUI, EditorUI) {
 	};
 
 	$override
+	// bool init(LevelEditorLayer* editorLayer) {
+	// 	if (!EditorUI::init(editorLayer)) {
+	// 		return false;
+	// 	}
+
+	// 	this->createKeybinds();
+
+	// 	// Adding 4 mod buttons here
+	// 	for (int i = 0; i < 4; i++) {
+	// 		auto spriteID = spriteIDs[i];
+	// 	    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
+
+	// 		// Setting a tag so we can check which button is being pressed
+	// 	    copyAndMoveBtn->setTag(i + 1);
+	// 		copyAndMoveBtn->setID(buttonIDs[i]);
+
+	// 		m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
+	// 		modButtons.push_back(copyAndMoveBtn);
+	// 	}
+
+	// 	auto* modSettingsBtn = this->getSpriteButton("clone_and_move_optionsBtn.png"_spr, menu_selector(MyEditorUI::onSettingsPopup), nullptr, 1.0f);
+	// 	modSettingsBtn->setID("options-move-clone-button"_spr);
+	// 	m_editButtonBar->m_buttonArray->addObject(modSettingsBtn);
+	// 	modButtons.push_back(modSettingsBtn);
+
+	// 	auto rows = GameManager::sharedState()->getIntGameVariable("0049");
+	// 	auto cols = GameManager::sharedState()->getIntGameVariable("0050");
+
+	// 	// Updating the Edit tab
+	// 	// not using reloadItems because for some reason it bugs the menu when BE's new edit menu is disabled
+	// 	m_editButtonBar->loadFromItems(m_editButtonBar->m_buttonArray, rows, cols, true);
+
+	// 	// Accessing the fields here to make modButtons vector clear on Fields destructuring
+	// 	this->m_fields.self();
+
+	// 	return true;
+	// }
 	bool init(LevelEditorLayer* editorLayer) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
@@ -86,15 +129,10 @@ class $modify(MyEditorUI, EditorUI) {
 
 		this->createKeybinds();
 
-		// Adding 4 mod buttons here
 		for (int i = 0; i < 4; i++) {
-			auto spriteID = spriteIDs[i];
-		    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
-
-			// Setting a tag so we can check which button is being pressed
-		    copyAndMoveBtn->setTag(i + 1);
+			auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
+			copyAndMoveBtn->setTag(i + 1);
 			copyAndMoveBtn->setID(buttonIDs[i]);
-
 			m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
 			modButtons.push_back(copyAndMoveBtn);
 		}
@@ -106,15 +144,53 @@ class $modify(MyEditorUI, EditorUI) {
 
 		auto rows = GameManager::sharedState()->getIntGameVariable("0049");
 		auto cols = GameManager::sharedState()->getIntGameVariable("0050");
+		
+		if (relocateButtonsType != "Default") {
+			this->relocateModButtons();
+		}
 
-		// Updating the Edit tab
-		// not using reloadItems because for some reason it bugs the menu when BE's new edit menu is disabled
 		m_editButtonBar->loadFromItems(m_editButtonBar->m_buttonArray, rows, cols, true);
 
-		// Accessing the fields here to make modButtons vector clear on Fields destructuring
 		this->m_fields.self();
-
 		return true;
+	}
+
+	void relocateModButtons() {
+		int requiredButtonIndex = -1;
+		
+		if (relocateButtonsType == "End") {
+			requiredButtonIndex = m_editButtonBar->m_buttonArray->count() - 1 - modButtons.size();
+		} else {
+			for (int i = 0; i < m_editButtonBar->m_buttonArray->count(); i++) {
+				auto button = static_cast<CCNode*>(m_editButtonBar->m_buttonArray->objectAtIndex(i));
+				if (button->getID() == requiredButtonId) {
+					requiredButtonIndex = i;
+					break;
+				}
+			}
+		}
+
+		if (requiredButtonIndex >= 0) {
+			CCArray *modifiedItems = CCArray::create();
+			
+			for (auto* modBtn : modButtons) {
+				m_editButtonBar->m_buttonArray->removeObject(modBtn);
+			}
+
+			for (int i = 0; i < m_editButtonBar->m_buttonArray->count(); i++) {
+				auto button = static_cast<CCNode*>(m_editButtonBar->m_buttonArray->objectAtIndex(i));
+				modifiedItems->addObject(button);
+				
+				if (i == requiredButtonIndex) {
+					for (auto* modBtn : modButtons) {
+						modifiedItems->addObject(modBtn);
+					}
+				}
+			}
+
+			m_editButtonBar->m_buttonArray->removeAllObjects();
+			m_editButtonBar->m_buttonArray->addObjectsFromArray(modifiedItems);
+		}
 	}
 
 	void createKeybinds() {
@@ -298,67 +374,74 @@ class $modify(MyEditorUI, EditorUI) {
 };
 
 
-// New moving buttons logic made with help from kuel27! Thank you!
-class $modify(EditButtonBar) {
-    $override
-	void loadFromItems(CCArray *items, int r, int c, bool unkBool) {
-		if (relocateButtonsType != "Default") {
-			if (this->getID() == "edit-tab-bar") {
-    		    if (modButtons.size() > 0) {
-    		        int requiredButtonIndex = -1;
-					if (relocateButtonsType == "End") {
-						requiredButtonIndex = items->count() - 1;
-					}
+// // New moving buttons logic made with help from kuel27! Thank you!
+// class $modify(EditButtonBar) {
+//     $override
+// 	void loadFromItems(CCArray *items, int r, int c, bool unkBool) {
+// 		if (relocateButtonsType != "Default") {
+// 			if (this->getID() == "edit-tab-bar") {
+//     		    if (modButtons.size() > 0) {
+//     		        int requiredButtonIndex = -1;
+// 					if (relocateButtonsType == "End") {
+// 						requiredButtonIndex = items->count() - 1;
+// 					}
 
-					if (requiredButtonIndex == -1) {
-    		    	    for (int i = 0; i < items->count(); i++) {
-    		    	        auto button = static_cast<CCNode*>(items->objectAtIndex(i));
+// 					if (requiredButtonIndex == -1) {
+//     		    	    for (int i = 0; i < items->count(); i++) {
+//     		    	        auto button = static_cast<CCNode*>(items->objectAtIndex(i));
 						
-    		    	        if (button->getID() == requiredButtonId) {
-    		    	            requiredButtonIndex = i;
-    		    	            break;
-    		    	        }
-    		    	    }
-					}
+//     		    	        if (button->getID() == requiredButtonId) {
+//     		    	            requiredButtonIndex = i;
+//     		    	            break;
+//     		    	        }
+//     		    	    }
+// 					}
 
-    		        if (requiredButtonIndex >= 0) {
-    		            CCArray *modifiedItems = CCArray::create();
+//     		        if (requiredButtonIndex >= 0) {
+//     		            CCArray *modifiedItems = CCArray::create();
 
-    		            for (int i = 0; i < items->count(); i++) {
-    		                auto button = static_cast<CCNode *>(items->objectAtIndex(i));
+//     		            for (int i = 0; i < items->count(); i++) {
+//     		                auto button = static_cast<CCNode *>(items->objectAtIndex(i));
 
-    		                bool shouldRemove = false;
-    		                for (const auto &id : buttonIDs) {
-    		                    if (button->getID() == id) {
-    		                        shouldRemove = true;
-    		                        break;
-    		                    }
-    		                }
+//     		                bool shouldRemove = false;
+//     		                for (const auto &id : buttonIDs) {
+//     		                    if (button->getID() == id) {
+//     		                        shouldRemove = true;
+//     		                        break;
+//     		                    }
+//     		                }
 
-    		                if (!shouldRemove) {
-    		                    modifiedItems->addObject(button);
-    		                }
+//     		                if (!shouldRemove) {
+//     		                    modifiedItems->addObject(button);
+//     		                }
 
-    		                if (i == requiredButtonIndex) {
-								for (int j = 0 ; j < modButtons.size() ; j++) {
-									auto button = modButtons.at(j);
-    		                    	modifiedItems->addObject(button);
-								}
-    		                }
-    		            }
+//     		                if (i == requiredButtonIndex) {
+// 								// for (int j = 0 ; j < modButtons.size() ; j++) {
+// 								// 	auto button = modButtons.at(j);
+//     		                    // 	modifiedItems->addObject(button);
+// 								// }
 
-						this->m_buttonArray->removeAllObjects();
-						this->m_buttonArray->addObjectsFromArray(modifiedItems);
+// 								for (auto* modBtn : modButtons) {
+// 									if (modBtn->getParent()) {
+// 										modBtn->removeFromParentAndCleanup(false);
+// 									}
+// 									modifiedItems->addObject(modBtn);
+// 								}
+//     		                }
+//     		            }
 
-    		            EditButtonBar::loadFromItems(modifiedItems, r, c, unkBool);
-    		            return;
-    		        } else {
-    		            log::warn("Required button '{}' not found, using original layout", requiredButtonId);
-    		        }
-    		    }
-			}
-		}
+// 						this->m_buttonArray->removeAllObjects();
+// 						this->m_buttonArray->addObjectsFromArray(modifiedItems);
 
-        EditButtonBar::loadFromItems(items, r, c, unkBool);
-    }
-};
+//     		            EditButtonBar::loadFromItems(modifiedItems, r, c, unkBool);
+//     		            return;
+//     		        } else {
+//     		            log::warn("Required button '{}' not found, using original layout", requiredButtonId);
+//     		        }
+//     		    }
+// 			}
+// 		}
+
+//         EditButtonBar::loadFromItems(items, r, c, unkBool);
+//     }
+// };
