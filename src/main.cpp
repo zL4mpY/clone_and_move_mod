@@ -70,8 +70,6 @@ $execute {
 				break;
 		}
     });
-
-	if (Loader::get()->isModLoaded("loovigmd.relocate_edit_buttons")) isRelocateButtonsModInstalled = true;
 }
 
 class $modify(MyEditorUI, EditorUI) {
@@ -94,6 +92,10 @@ class $modify(MyEditorUI, EditorUI) {
 		}
 
 		this->createKeybinds();
+		if (Loader::get()->isModLoaded("loovigmd.relocate_edit_buttons")) {
+			isRelocateButtonsModInstalled = true;
+			log::debug("Relocate Edit Buttons is enabled");
+		}
 
 		for (int i = 0; i < 4; i++) {
 			auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
