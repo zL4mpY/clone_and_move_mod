@@ -1,3 +1,6 @@
+# 2.3.2
+- Fix setting button behavior with [Relocate Edit Buttons](mod:loovigmd.relocate_edit_buttons) mod (again)
+
 # 2.3.1
 - Fix setting button behavior with [Relocate Edit Buttons](mod:loovigmd.relocate_edit_buttons) mod
 - Fix README and about
