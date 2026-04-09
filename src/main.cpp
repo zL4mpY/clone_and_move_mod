@@ -26,6 +26,7 @@ std::array<std::string, 4> buttonIDs = {
 
 std::string requiredButtonId = "move-right-tiny-button";
 std::string relocateButtonsType = "Default";
+bool isRelocateButtonsModInstalled = false;
 std::map<std::string, int> relocateButtonsTypes;
 std::vector<CCMenuItemSpriteExtra*> modButtons;
 float moveStep = 1.0f;
@@ -69,6 +70,8 @@ $execute {
 				break;
 		}
     });
+
+	if (Loader::get()->isModLoaded("loovigmd.relocate_edit_buttons")) isRelocateButtonsModInstalled = true;
 }
 
 class $modify(MyEditorUI, EditorUI) {
@@ -85,43 +88,6 @@ class $modify(MyEditorUI, EditorUI) {
 	};
 
 	$override
-	// bool init(LevelEditorLayer* editorLayer) {
-	// 	if (!EditorUI::init(editorLayer)) {
-	// 		return false;
-	// 	}
-
-	// 	this->createKeybinds();
-
-	// 	// Adding 4 mod buttons here
-	// 	for (int i = 0; i < 4; i++) {
-	// 		auto spriteID = spriteIDs[i];
-	// 	    auto* copyAndMoveBtn = this->getSpriteButton(spriteIDs[i], menu_selector(MyEditorUI::onButtonsClick), nullptr, 0.9f);
-
-	// 		// Setting a tag so we can check which button is being pressed
-	// 	    copyAndMoveBtn->setTag(i + 1);
-	// 		copyAndMoveBtn->setID(buttonIDs[i]);
-
-	// 		m_editButtonBar->m_buttonArray->addObject(copyAndMoveBtn);
-	// 		modButtons.push_back(copyAndMoveBtn);
-	// 	}
-
-	// 	auto* modSettingsBtn = this->getSpriteButton("clone_and_move_optionsBtn.png"_spr, menu_selector(MyEditorUI::onSettingsPopup), nullptr, 1.0f);
-	// 	modSettingsBtn->setID("options-move-clone-button"_spr);
-	// 	m_editButtonBar->m_buttonArray->addObject(modSettingsBtn);
-	// 	modButtons.push_back(modSettingsBtn);
-
-	// 	auto rows = GameManager::sharedState()->getIntGameVariable("0049");
-	// 	auto cols = GameManager::sharedState()->getIntGameVariable("0050");
-
-	// 	// Updating the Edit tab
-	// 	// not using reloadItems because for some reason it bugs the menu when BE's new edit menu is disabled
-	// 	m_editButtonBar->loadFromItems(m_editButtonBar->m_buttonArray, rows, cols, true);
-
-	// 	// Accessing the fields here to make modButtons vector clear on Fields destructuring
-	// 	this->m_fields.self();
-
-	// 	return true;
-	// }
 	bool init(LevelEditorLayer* editorLayer) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
@@ -182,11 +148,19 @@ class $modify(MyEditorUI, EditorUI) {
 				modifiedItems->addObject(button);
 				
 				if (i == requiredButtonIndex) {
-					for (auto* modBtn : modButtons) {
-						modifiedItems->addObject(modBtn);
+					if (isRelocateButtonsModInstalled) {
+						for (auto* modBtn : std::vector<CCMenuItemSpriteExtra*>(modButtons.begin(), modButtons.end()-1)) {
+							modifiedItems->addObject(modBtn);
+						}
+					} else {
+						for (auto* modBtn : modButtons) {
+							modifiedItems->addObject(modBtn);
+						}
 					}
 				}
 			}
+
+			if (isRelocateButtonsModInstalled) modifiedItems->addObject(modButtons.back());
 
 			m_editButtonBar->m_buttonArray->removeAllObjects();
 			m_editButtonBar->m_buttonArray->addObjectsFromArray(modifiedItems);

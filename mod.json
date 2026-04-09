@@ -8,7 +8,7 @@
 	},
 	"id": "loovigmd.clone_and_move",
 	"name": "Clone and Move",
-	"version": "v2.3.0",
+	"version": "v2.3.1",
 	"developer": "enimeoww",
 	"description": "Adds Copy + Paste + Move buttons.",
 	"links": {
@@ -23,7 +23,7 @@
 	},
 	"dependencies": {
 		"geode.node-ids": {
-			"version": ">=v1.23.0",
+			"version": ">=v1.23.3",
 			"required": true
 		}
 	},

@@ -1,6 +1,7 @@
 # Clone and Move Mod
 This Geometry Dash mod adds 4 new buttons which allow you to copy and paste and then move object in any direction in 1 click.
 This mod may be useless on PC but useful on mobile.
+There is also a quick shortcut for setting button in case if you need to change the move step.
 
 ## How to use
 1. Place some object or select the existing ones.
@@ -25,10 +26,10 @@ geode build
 ```
 
 ## Credits
-- GoldUkulele - new mod icon :3
 - [undefined0](https://github.com/undefined06855) - code for manually duplicating objects
 - [hiimjasmine00](https://github.com/hiimjasmine00) - helping me to fix the problem with buttons ordering with BetterEdit enabled and my errors in new relocating buttons logic.
 - [kuel27](https://github.com/kuel27) - helping me to make the new relocating buttons logic
+- GoldUkulele - new mod icon :3
 
 ## License
 This mod is licensed under the MIT license. See the details in [LICENSE.md](LICENSE.md)

@@ -1,3 +1,7 @@
+# 2.3.1
+- Fix setting button behavior with [Relocate Edit Buttons](mod:loovigmd.relocate_edit_buttons) mod
+- Fix README and about
+
 # 2.3.0
 - Update to GD 2.2081
 - Added Move Step setting
@@ -5,7 +9,7 @@
 - New mod icon (thanks to GoldUkulele)
 
 # 2.2.0
-- Revamped relocating buttons logic, which should fix the mod with [Repeating Editor Buttons](alphalaneous.repeating_editor_buttons) mod enabled. Thanks to [kuel27](https://github.com/kuel27) for helping me revamping it and [hiimjasmine00](https://github.com/hiimjasmine00) for helping me fix my errors!
+- Revamped relocating buttons logic, which should fix the mod with [Repeating Editor Buttons](mod:alphalaneous.repeating_editor_buttons) mod enabled (outdated, use [Tinker](mod:alphalaneous.tinker) instead). Thanks to [kuel27](https://github.com/kuel27) for helping me revamping it and [hiimjasmine00](https://github.com/hiimjasmine00) for helping me fix my errors!
 - iOS support
 - [Custom Keybinds](mod:geode.custom-keybinds) support for MacOS (again)
 - You don't have to restart your game now after changing the settings to make them apply
